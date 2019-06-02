@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ArFlix/API.dart';
+import 'package:ArFlix/Getter.dart';
 import 'package:ArFlix/Models/Movie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -59,20 +60,9 @@ class MyListScreen extends StatefulWidget {
 
 class _MyListScreenState extends State {
   _getLatest() {
-    API.getLatest().then((response) {
+    Getter.getLatest().then((response) {
       setState(() {
-        Iterable list = json.decode(response.body);
-        latestMovies = list.map((model) => Movie.fromJson(model)).toList();
-      });
-    });
-  }
-
-  _getWatchDetails(String lnk) {
-    movieWatchDetails = new List<Movie>();
-    API.getMovieWatchLinks(lnk).then((response) {
-      setState(() {
-        Iterable list = json.decode(response.body);
-        movieWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
+        latestMovies = response;
       });
     });
   }
@@ -88,7 +78,7 @@ class _MyListScreenState extends State {
     ));
   }
 
-  Widget _Done() {
+  Widget _done() {
     return ListView.separated(
       physics: AlwaysScrollableScrollPhysics(),
       itemCount: latestMovies.length,
@@ -119,13 +109,11 @@ class _MyListScreenState extends State {
                 onTap: () {
                   selectedMovie = latestMovies[index];
                   if (selectedMovie.type.contains('TV')) {
-                    _getWatchDetails(selectedMovie.url.substring(30));
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => _TVWatchDetail()),
                     );
                   } else {
-                    _getWatchDetails(selectedMovie.url.substring(28));
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -133,6 +121,10 @@ class _MyListScreenState extends State {
                     );
                   }
                 },
+                trailing: IconButton(
+                  icon: Icon(Icons.star_border),
+                  onPressed: () {},
+                ),
               ),
             ],
           )),
@@ -143,17 +135,7 @@ class _MyListScreenState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    var flutterWebviewPlugin = new FlutterWebviewPlugin();
-    flutterWebviewPlugin.launch("https://vidbom.com/embed-jx6mgfu1stp9.html",
-        hidden: true);
-    flutterWebviewPlugin
-        .evalJavascript("jwplayer().getPlaylistItem()['file'];")
-        .then((res) {
-      print("Result is : " + res);
-      testVid = res;
-    });
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -166,7 +148,6 @@ class _MyListScreenState extends State {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -184,6 +165,11 @@ class _MyListScreenState extends State {
             appBar: AppBar(
                 title: Text("آخر الأفلام والمسلسلات المضافة"),
                 actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.star),
+                    tooltip: 'المفضلة',
+                    onPressed: () {},
+                  ),
                   IconButton(
                     icon: Icon(Icons.search),
                     tooltip: 'بحث',
@@ -217,7 +203,7 @@ class _MyListScreenState extends State {
                           ),
                         ],
                       )
-                    : _Done())));
+                    : _done())));
   }
 }
 //-----------------------------
@@ -246,20 +232,9 @@ class _SearchScreenState extends State {
   final myController = TextEditingController();
 
   _search(String s) {
-    API.getSearch(s).then((response) {
+    Getter.search(s).then((response) {
       setState(() {
-        Iterable list = json.decode(response.body);
-        searchList = list.map((model) => Movie.fromJson(model)).toList();
-      });
-    });
-  }
-
-  _getWatchDetails(String lnk) {
-    movieWatchDetails = new List<Movie>();
-    API.getMovieWatchLinks(lnk).then((response) {
-      setState(() {
-        Iterable list = json.decode(response.body);
-        movieWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
+        searchList = response;
       });
     });
   }
@@ -274,7 +249,7 @@ class _SearchScreenState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
+    //
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -284,7 +259,6 @@ class _SearchScreenState extends State {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -342,8 +316,6 @@ class _SearchScreenState extends State {
                                   onTap: () {
                                     selectedMovie = searchList[index];
                                     if (selectedMovie.type.contains('TV')) {
-                                      _getWatchDetails(
-                                          selectedMovie.url.substring(30));
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -351,8 +323,6 @@ class _SearchScreenState extends State {
                                                 _TVWatchDetail()),
                                       );
                                     } else {
-                                      _getWatchDetails(
-                                          selectedMovie.url.substring(28));
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -361,6 +331,10 @@ class _SearchScreenState extends State {
                                       );
                                     }
                                   },
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.star_border),
+                                    onPressed: () {},
+                                  ),
                                 ),
                               ],
                             ),
@@ -391,27 +365,24 @@ class _MovieWatchStateFul extends StatefulWidget {
 class _MovieWatchState extends State {
   _getWatchDetails(String lnk) {
     movieWatchDetails = new List<Movie>();
-    API.getMovieWatchLinks(lnk).then((response) {
+    Getter.getWatchLinks(lnk).then((response) {
       setState(() {
-        Iterable list = json.decode(response.body);
-        movieWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
+        movieWatchDetails = response;
       });
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    _getWatchDetails(selectedMovie.url.substring(28));
+    _getWatchDetails(selectedMovie.url);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -426,13 +397,13 @@ class _MovieWatchState extends State {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        Text("تحميل تفاصيل الفيلم ..."),
+        Text("تحميل روابط مشاهدة الفيلم ..."),
         CircularProgressIndicator()
       ],
     ));
   }
 
-  Widget _Done() {
+  Widget _done() {
     return ListView.separated(
       itemCount: movieWatchDetails.length + 1,
       separatorBuilder: (context, index) {
@@ -565,7 +536,7 @@ class _MovieWatchState extends State {
               ),
             ];
           },
-          body: movieWatchDetails.length == 0 ? _progress() : _Done(),
+          body: movieWatchDetails.length == 0 ? _progress() : _done(),
         ));
   }
 }
@@ -599,7 +570,6 @@ class _TVWatchState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -609,7 +579,6 @@ class _TVWatchState extends State {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -653,7 +622,7 @@ class _TVWatchState extends State {
     return w;
   }
 
-  Widget _Done() {
+  Widget _done() {
     List<String> seasons = new List<String>();
     List<List<Movie>> movs = new List<List<Movie>>();
     seasons.add("");
@@ -745,7 +714,7 @@ class _TVWatchState extends State {
               ),
             ];
           },
-          body: movieWatchDetails.length == 0 ? _progress() : _Done(),
+          body: movieWatchDetails.length == 0 ? _progress() : _done(),
         ));
   }
 }
@@ -779,7 +748,6 @@ class _MovieWatchLinksState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -789,7 +757,6 @@ class _MovieWatchLinksState extends State {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -810,7 +777,7 @@ class _MovieWatchLinksState extends State {
     ));
   }
 
-  Widget _Done() {
+  Widget _done() {
     return ListView.builder(
         itemCount: tvWatchDetails.length,
         itemBuilder: (context, index) {
@@ -855,7 +822,7 @@ class _MovieWatchLinksState extends State {
               },
             ),
           ]),
-          body: tvWatchDetails.length == 0 ? _progress() : _Done(),
+          body: tvWatchDetails.length == 0 ? _progress() : _done(),
         ));
   }
 }
@@ -889,7 +856,6 @@ class _MovieWatchWebViewState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
@@ -900,7 +866,6 @@ class _MovieWatchWebViewState extends State {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -913,8 +878,6 @@ class _MovieWatchWebViewState extends State {
     return new WebviewScaffold(
       url: watchURL,
       supportMultipleWindows: true,
-
-
     );
   }
 }
