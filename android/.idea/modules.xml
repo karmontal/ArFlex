@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_stetho-0.2.2/android/flutter_stetho.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_stetho-0.2.2/android/flutter_stetho.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_webview_plugin-0.3.0+2/android/flutter_webview_plugin.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_webview_plugin-0.3.0+2/android/flutter_webview_plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-2.2.6/android/fluttertoast.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-2.2.6/android/fluttertoast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/android/path_provider.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/android/path_provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/android/shared_preferences.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/android/shared_preferences.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher-4.2.0+1/android/url_launcher.iml" filepath="$PROJECT_DIR$/../../../../../Apps/Android/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher-4.2.0+1/android/url_launcher.iml" />
+    </modules>
+  </component>
+</project>
