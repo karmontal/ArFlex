@@ -74,13 +74,24 @@ class Getter {
       var typ = item.querySelector(".image").querySelector("span").innerHtml;
       if (typ == "Movie" || typ == "TVShow") {
         h = new Movie(
-          item.querySelector(".details").querySelector(".title").querySelector("a").innerHtml,//name
-          item.querySelector(".details").querySelector(".title").querySelector("a").attributes["href"],//url
-          item.querySelector(".image").querySelector("img").attributes["src"],//poster
-          typ,//type
-          item.querySelector(".details").querySelector("p").innerHtml,//desc
-          ''//year
-        );
+            item
+                .querySelector(".details")
+                .querySelector(".title")
+                .querySelector("a")
+                .innerHtml, //name
+            item
+                .querySelector(".details")
+                .querySelector(".title")
+                .querySelector("a")
+                .attributes["href"], //url
+            item
+                .querySelector(".image")
+                .querySelector("img")
+                .attributes["src"], //poster
+            typ, //type
+            item.querySelector(".details").querySelector("p").innerHtml, //desc
+            '' //year
+            );
         result.add(h);
       }
     }
@@ -102,13 +113,41 @@ class Getter {
     for (var item in ite) {
       if (item.attributes["data-url"] != null) {
         h = new Movie(
-          item.querySelector("span.server").innerHtml,//name
-          item.attributes["data-url"],//url
-          '',//poster
-          item.attributes["data-type"],//type
-          document.querySelector("._pm_quality").innerHtml,//desc
-          ''//year
-        );
+            item.querySelector("span.server").innerHtml, //name
+            item.attributes["data-url"], //url
+            '', //poster
+            item.attributes["data-type"], //type
+            '', //desc
+            '' //year
+            );
+        result.add(h);
+      }
+    }
+
+    return result;
+  }
+
+  static Future<List<Movie>> getTVShowDetails(String str) async {
+    var client = Client();
+    Movie h;
+    List<Movie> result = new List<Movie>();
+    Response response;
+    response = await client.get(str);
+    String body = utf8.decode(response.bodyBytes);
+    var document = parse(body);
+
+    var ses = document.querySelectorAll(".se-c");
+    for (var sea in ses) {
+      var eps = sea.querySelector(".episodios").querySelectorAll("li");
+      for (var ep in eps) {
+        h = new Movie(
+            ep.querySelector("a").innerHtml, //name
+            ep.querySelector("a").attributes["href"], //url
+            ep.querySelector("img").attributes["src"], //poster
+            sea.querySelector(".se-t").innerHtml, //type
+            ep.querySelector(".numerando").innerHtml, //desc
+            ep.querySelector(".date").innerHtml //year
+            );
         result.add(h);
       }
     }

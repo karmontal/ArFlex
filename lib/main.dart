@@ -15,7 +15,7 @@ var movieWatchDetails = new List<Movie>();
 var latestMovies = new List<Movie>();
 var tvWatchDetails = new List<Movie>();
 var searchList = new List<Movie>();
-String watchURL, searchTxt, tvWatchURL, testVid;
+String watchURL, searchTxt, tvWatchURL, tvShowName;
 int ver = 1;
 int latestVer = 0;
 
@@ -479,7 +479,6 @@ class _MovieWatchState extends State {
                 children: <Widget>[
                   ListTile(
                     title: Text(movieWatchDetails[index].name),
-                    //subtitle: Text(selectedMovie.url.substring(28)),
                     onTap: () {
                       watchURL = movieWatchDetails[index].url;
                       Navigator.push(
@@ -560,10 +559,9 @@ class _TVWatchStateFul extends StatefulWidget {
 class _TVWatchState extends State {
   _getWatchDetails(String lnk) {
     movieWatchDetails = new List<Movie>();
-    API.getTVSEpisodes(lnk).then((response) {
+    Getter.getTVShowDetails(lnk).then((response) {
       setState(() {
-        Iterable list = json.decode(response.body);
-        movieWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
+        movieWatchDetails = response;
       });
     });
   }
@@ -574,7 +572,7 @@ class _TVWatchState extends State {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    _getWatchDetails(selectedMovie.url.substring(30));
+    _getWatchDetails(selectedMovie.url);
   }
 
   @override
@@ -599,18 +597,18 @@ class _TVWatchState extends State {
     ));
   }
 
-  List<Widget> _getmovs(List<Movie> s) {
+  List<Widget> _geteps(List<Movie> s) {
     List<Widget> w = new List<Widget>();
     for (int i = 0; i < s.length; i++) {
       w.add(new ListTile(
-        title: Text(s[i].name),
-        subtitle: Text(s[i].desc),
+        title: Text(s[i].desc + " (" + s[i].name + ")"),
+        subtitle: Text(s[i].year),
         leading: Image(
           image: new CachedNetworkImageProvider(s[i].poster),
           height: 72,
         ),
         onTap: () {
-          tvWatchURL = s[i].url.substring(31);
+          tvWatchURL = s[i].url;
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => _TVWatchLinksState()),
@@ -669,7 +667,7 @@ class _TVWatchState extends State {
         } else {
           return ExpansionTile(
             title: Text("Season " + seasons[index]),
-            children: _getmovs(movs[index - 1]),
+            children: _geteps(movs[index - 1]),
           );
         }
       },
@@ -738,10 +736,9 @@ class _MovieWatchLinksStateFul extends StatefulWidget {
 class _MovieWatchLinksState extends State {
   _getTVWatchLinks(String lnk) {
     tvWatchDetails = new List<Movie>();
-    API.getTVEpisodeWatchLinks(lnk).then((response) {
+    Getter.getWatchLinks(lnk).then((response) {
       setState(() {
-        Iterable list = json.decode(response.body);
-        tvWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
+        tvWatchDetails = response;
       });
     });
   }
@@ -788,7 +785,6 @@ class _MovieWatchLinksState extends State {
                 children: <Widget>[
                   ListTile(
                     title: Text(tvWatchDetails[index].name),
-                    //subtitle: Text(selectedMovie.url.substring(28)),
                     onTap: () {
                       watchURL = tvWatchDetails[index].url;
                       Navigator.push(
@@ -833,52 +829,41 @@ class _MovieWatchWebView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new _MovieWatchWebViewStateFul(),
-    );
-  }
-}
-
-class _MovieWatchWebViewStateFul extends StatefulWidget {
-  @override
-  createState() => _MovieWatchWebViewState();
-}
-
-class _MovieWatchWebViewState extends State {
-  _getWatchDetails(String lnk) {
-    movieWatchDetails = new List<Movie>();
-    API.getMovieWatchLinks(lnk).then((response) {
-      setState(() {
-        Iterable list = json.decode(response.body);
-        movieWatchDetails = list.map((model) => Movie.fromJson(model)).toList();
-      });
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
-    _getWatchDetails(selectedMovie.url.substring(28));
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
-  }
-
-  @override
-  build(context) {
-    return new WebviewScaffold(
+      body: new WebviewScaffold(
       url: watchURL,
       supportMultipleWindows: true,
+    ),
     );
   }
 }
-//-----------------------------
+
+// class _MovieWatchWebViewStateFul extends StatefulWidget {
+//   @override
+//   createState() => _MovieWatchWebViewState();
+// }
+
+// class _MovieWatchWebViewState extends State {
+//   @override
+//   void initState() {
+//     super.initState();
+//     SystemChrome.setPreferredOrientations([
+//       DeviceOrientation.landscapeRight,
+//       DeviceOrientation.landscapeLeft,
+//     ]);
+//   }
+
+//   @override
+//   void dispose() {
+//     SystemChrome.setPreferredOrientations([
+//       DeviceOrientation.portraitUp,
+//       DeviceOrientation.portraitDown,
+//     ]);
+//     super.dispose();
+//   }
+
+//   @override
+//   build(context) {
+//     return ;
+//   }
+// }
+// //-----------------------------
