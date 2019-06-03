@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:ArFlix/API.dart';
 import 'package:ArFlix/Getter.dart';
 import 'package:ArFlix/Models/Movie.dart';
@@ -829,41 +828,41 @@ class _MovieWatchWebView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new WebviewScaffold(
-      url: watchURL,
-      supportMultipleWindows: true,
-    ),
+      body: new _MovieWatchWebViewStateFul()
     );
   }
 }
 
-// class _MovieWatchWebViewStateFul extends StatefulWidget {
-//   @override
-//   createState() => _MovieWatchWebViewState();
-// }
+class _MovieWatchWebViewStateFul extends StatefulWidget {
+  @override
+  createState() => _MovieWatchWebViewState();
+}
 
-// class _MovieWatchWebViewState extends State {
-//   @override
-//   void initState() {
-//     super.initState();
-//     SystemChrome.setPreferredOrientations([
-//       DeviceOrientation.landscapeRight,
-//       DeviceOrientation.landscapeLeft,
-//     ]);
-//   }
+class _MovieWatchWebViewState extends State {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
 
-//   @override
-//   void dispose() {
-//     SystemChrome.setPreferredOrientations([
-//       DeviceOrientation.portraitUp,
-//       DeviceOrientation.portraitDown,
-//     ]);
-//     super.dispose();
-//   }
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
 
-//   @override
-//   build(context) {
-//     return ;
-//   }
-// }
-// //-----------------------------
+  @override
+  build(context) {
+    return new WebviewScaffold(
+      url: watchURL,
+      supportMultipleWindows: true,
+    );
+  }
+}
+//-----------------------------
