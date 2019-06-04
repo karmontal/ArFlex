@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_stetho/flutter_stetho.dart';
 
 //------ Global Variables------
 Movie selectedMovie;
@@ -15,6 +14,7 @@ var latestMovies = new List<Movie>();
 var tvWatchDetails = new List<Movie>();
 var searchList = new List<Movie>();
 String watchURL, searchTxt, tvWatchURL, tvShowName;
+bool canRunSite = false;
 int ver = 1;
 int latestVer = 0;
 
@@ -32,8 +32,6 @@ _launchURL() async {
 //-----------------------------
 
 void main() async {
-  Stetho.initialize();
-  //print(await getVid.initiate());
   runApp(new MyApp());
 }
 
@@ -59,6 +57,11 @@ class MyListScreen extends StatefulWidget {
 
 class _MyListScreenState extends State {
   _getLatest() {
+    canLaunch("https://www.movs4u.tv/").then((onValue) {
+      setState(() {
+        canRunSite = onValue;
+      });
+    });
     Getter.getLatest().then((response) {
       setState(() {
         latestMovies = response;
@@ -139,9 +142,14 @@ class _MyListScreenState extends State {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    API.getVer().then((onValue) {
-      latestVer = int.parse(onValue);
+    canLaunch("http://api.karapps.com").then((onValue) {
+      if (onValue) {
+        API.getVer().then((onValue) {
+          latestVer = int.parse(onValue);
+        });
+      }
     });
+
     _getLatest();
   }
 
@@ -180,29 +188,33 @@ class _MyListScreenState extends State {
                     },
                   ),
                 ]),
-            body: (latestMovies.length == 0
-                ? _progress()
-                : latestVer > ver
-                    ? AlertDialog(
-                        title: Text('إصدار جديد'),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text('هناك إصدار جديد للتطبيق.'),
-                              Text('انقر لتحميله من موقعنا.'),
+            body: !canRunSite
+                ? Center(
+                    child: Text(
+                        "لايمكن تشغيل موقع الأفلام حاليا ... يرجى التأكد من اتصال الانترنت"))
+                : (latestMovies.length == 0
+                    ? _progress()
+                    : latestVer > ver
+                        ? AlertDialog(
+                            title: Text('إصدار جديد'),
+                            content: SingleChildScrollView(
+                              child: ListBody(
+                                children: <Widget>[
+                                  Text('هناك إصدار جديد للتطبيق.'),
+                                  Text('انقر لتحميله من موقعنا.'),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('تحميل'),
+                                onPressed: () {
+                                  _launchURL();
+                                },
+                              ),
                             ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text('تحميل'),
-                            onPressed: () {
-                              _launchURL();
-                            },
-                          ),
-                        ],
-                      )
-                    : _done())));
+                          )
+                        : _done())));
   }
 }
 //-----------------------------
@@ -827,9 +839,7 @@ class _MovieWatchLinksState extends State {
 class _MovieWatchWebView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: new _MovieWatchWebViewStateFul()
-    );
+    return Scaffold(body: new _MovieWatchWebViewStateFul());
   }
 }
 

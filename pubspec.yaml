@@ -12,7 +12,6 @@ dependencies:
   cached_network_image: ^0.5.1
   flutter_webview_plugin: ^0.3.0+2
   url_launcher: ^4.2.0+1
-  flutter_stetho: ^0.2.2
   html: ^0.13.3+3
 
 
