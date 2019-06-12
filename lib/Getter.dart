@@ -1,17 +1,29 @@
 import 'dart:convert';
+import 'package:sqflite/sqflite.dart';
 
+import 'dbConn.dart';
 import 'package:html/parser.dart'; // Contains HTML parsers to generate a Document object
 import 'package:html/dom.dart'; // Contains DOM related classes for extracting data from elements
 import 'package:http/http.dart';
 import 'package:ArFlix/Models/Movie.dart';
 
 class Getter {
+  static Database dbb;
+  static void init() {
+    DbConn.getDb().then((onValue) {
+      openDatabase(onValue).then((onValue){
+        dbb = onValue;
+      });
+    });
+  }
+
   static Future<List<Movie>> getLatest() async {
     var client = Client();
     Movie h;
     List<Element> ite;
     List<Movie> result = new List<Movie>();
     Response response;
+
     response = await client.get('https://www.movs4u.tv/');
     String body = utf8.decode(response.bodyBytes);
     var document = parse(body);
@@ -34,6 +46,8 @@ class Getter {
                   .innerHtml,
           "",
           item.querySelector("div.data").querySelector("span").innerHtml);
+      h.fav = false;
+      
       result.add(h);
     }
 
@@ -53,6 +67,8 @@ class Getter {
               item.querySelector("div.poster").querySelector(".esp").innerHtml,
           "",
           item.querySelector("div.data").querySelector("span").innerHtml);
+      h.fav = false;
+      
       result.add(h);
     }
 

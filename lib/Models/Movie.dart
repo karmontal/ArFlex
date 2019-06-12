@@ -5,6 +5,7 @@ class Movie {
   String type;
   String desc;
   String year;
+  bool fav;
 
   Movie(String name, String url, String poster, String type, String desc,
       String year) {

@@ -5,7 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'dbConn.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter_stetho/flutter_stetho.dart';
 
 //------ Global Variables------
 Movie selectedMovie;
@@ -17,6 +20,7 @@ String watchURL, searchTxt, tvWatchURL, tvShowName;
 bool canRunSite = false;
 int ver = 1;
 int latestVer = 0;
+Database db;
 
 //-----------------------------
 
@@ -32,6 +36,7 @@ _launchURL() async {
 //-----------------------------
 
 void main() async {
+  Stetho.initialize();
   runApp(new MyApp());
 }
 
@@ -93,6 +98,20 @@ class _MyListScreenState extends State {
           );
       },
       itemBuilder: (context, index) {
+        DbConn.getDb().then((onValue) {
+          openDatabase(onValue).then((onValue) {
+            onValue
+                .rawQuery("Select Count(*) as 'c' from fav where name = \"" +
+                    latestMovies[index].name.toString() +
+                    "\"")
+                .then((onValue) {
+              setState(() {
+                latestMovies[index].fav = onValue[0]["c"] != 0;
+              });
+            });
+          });
+        });
+
         return Container(
           padding: EdgeInsets.all(5),
           child: Card(
@@ -124,8 +143,45 @@ class _MyListScreenState extends State {
                   }
                 },
                 trailing: IconButton(
-                  icon: Icon(Icons.star_border),
-                  onPressed: () {},
+                  icon: latestMovies[index].fav
+                      ? Icon(
+                          Icons.star,
+                          color: Colors.red,
+                        )
+                      : Icon(Icons.star_border),
+                  onPressed: () {
+                    if (latestMovies[index].fav) {
+                      DbConn.getDb().then((onValue) {
+                        openDatabase(onValue).then((onValue) {
+                          onValue.rawInsert("delete from fav where name = '" +
+                              latestMovies[index].name +
+                              "'");
+                        });
+                      });
+                    } else {
+                      DbConn.getDb().then((onValue) {
+                        openDatabase(onValue).then((onValue) {
+                          onValue.rawInsert(
+                              "insert into fav(name,url,poster,type,desc,year)values('" +
+                                  latestMovies[index].name +
+                                  "','" +
+                                  latestMovies[index].url +
+                                  "','" +
+                                  latestMovies[index].poster +
+                                  "','" +
+                                  latestMovies[index].type +
+                                  "','" +
+                                  latestMovies[index].desc +
+                                  "','" +
+                                  latestMovies[index].year +
+                                  "')");
+                        });
+                      });
+                    }
+                    setState(() {
+                      latestMovies[index].fav = !latestMovies[index].fav;
+                    });
+                  },
                 ),
               ),
             ],
@@ -425,45 +481,6 @@ class _MovieWatchState extends State {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-//                  Row(
-//                    crossAxisAlignment: CrossAxisAlignment.start,
-//                    children: [
-//                      Container(
-//                        height: 300.0,
-//                        padding: const EdgeInsets.all(8.0),
-//                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-//                        child: Image(
-//                          image: new CachedNetworkImageProvider(
-//                              selectedMovie.poster),
-//                          height: 300,
-//                        ),
-//                      ),
-//                      Container(
-//                          height: 300.0,
-//                          padding: const EdgeInsets.all(8.0),
-//                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-//                          child: Column(
-//                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                            mainAxisSize: MainAxisSize.max,
-//                            crossAxisAlignment: CrossAxisAlignment.center,
-//                            children: [
-//                              RaisedButton(
-//                                color: Colors.redAccent,
-//                                textColor: Colors.white,
-//                                child: Text("مشاهدة"),
-//                                onPressed: () {},
-//                              ),
-//                              RaisedButton(
-//                                color: Colors.redAccent,
-//                                textColor: Colors.white,
-//                                child: Text("تحميل"),
-//                              )
-//                            ],
-//                          ))
-//                    ],
-//                  ),
-//                  Text(selectedMovie.name, style: TextStyle(fontSize: 24.0)),
-//                  Text(selectedMovie.type),
                   Center(
                     child: Text("سيرفرات المشاهدة"),
                   )
@@ -621,7 +638,7 @@ class _TVWatchState extends State {
         onTap: () {
           tvWatchURL = s[i].url;
           Navigator.push(
-            context,
+            this.context,
             MaterialPageRoute(builder: (context) => _TVWatchLinksState()),
           );
         },
