@@ -13,6 +13,7 @@ dependencies:
   flutter_webview_plugin: ^0.3.0+2
   url_launcher: ^4.2.0+1
   html: ^0.13.3+3
+  facebook_audience_network: ^0.3.2
 
 
 
