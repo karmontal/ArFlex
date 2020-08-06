@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:facebook_audience_network/facebook_audience_network.dart';
 
 //------ Global Variables------
 Movie selectedMovie;
@@ -33,7 +32,6 @@ _launchURL() async {
 //-----------------------------
 
 void main() async {
-  FacebookAudienceNetwork.init();
   runApp(new MyApp());
 }
 
@@ -88,21 +86,7 @@ class _MyListScreenState extends State {
       itemCount: latestMovies.length,
       separatorBuilder: (context, index) {
         if ((index + 1) % (5) == 0 && index > 0) {
-          return FacebookNativeAd(
-            placementId: "333970483937433_333971380604010",
-            adType: NativeAdType.NATIVE_BANNER_AD,
-            bannerAdSize: NativeBannerAdSize.HEIGHT_100,
-            width: double.infinity,
-            backgroundColor: Colors.blue,
-            titleColor: Colors.white,
-            descriptionColor: Colors.white,
-            buttonColor: Colors.deepPurple,
-            buttonTitleColor: Colors.white,
-            buttonBorderColor: Colors.white,
-            listener: (result, value) {
-              print("Native Ad: $result --> $value");
-            },
-          );
+          return Divider();
         } else
           return SizedBox(
             height: 0,
